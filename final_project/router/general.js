@@ -6,26 +6,41 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const username = req.body.username;
+    const password = req.body.password;
+  
+    if (username && password) {
+      if (isValid(username)) { 
+        users.push({"username":username,"password":password});
+        return res.status(200).json({message: "User successfully registred. Now you can login"});
+      } else {
+        return res.status(404).json({message: "Username not valid!"});    
+      }
+    } 
+    return res.status(404).json({message: "Unable to register user."});
 });
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  return books;
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  let isbn = req.params.isbn;
+  let filtered = books.filter((book)=>{
+    return book.isbn === isbn
+  });
+  return filtered; 
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    let author = req.params.author;
+    let filtered = books.filter((book)=>{
+      return book.author === author
+    });
+    return filtered; 
 });
 
 // Get all books based on title
