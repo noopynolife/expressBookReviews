@@ -53,8 +53,41 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    let isbn = req.params.isbn;
+    let filtered = books.filter((book)=>{
+      return book.isbn === isbn
+    });
+    if (!filtered){
+        return res.status(404).json({message: "No record with the specified ISBN exists."});
+    }
+    if (!req.session.authorization.username){
+        return res.status(404).json({message: "You must be logged in to post a review."});
+    }
+    if (!req.body){
+        return res.status(404).json({message: "Your review cannot be empty."});
+    }
+    filtered[0].reviews[req.session.authorization.username] = req.body;
+    return res.status(200).json(filtered);
+});
+
+// Remove a book review
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    let isbn = req.params.isbn;
+    let filtered = books.filter((book)=>{
+        return book.isbn === isbn
+    });
+    if (!filtered){
+        return res.status(404).json({message: "No record with the specified ISBN exists."});
+    }
+    if (!req.session.authorization.username){
+        return res.status(404).json({message: "You must be logged in to post a review."});
+    }
+    if (req.session.authorization.username in filtered[0].reviews){
+        delete filtered[0].reviews[req.session.authorization.username];
+        return res.status(200).json({message: "Your review was deleted."});
+    }else{
+        return res.status(404).json({message: "You have not reviewed this title."});
+    }
 });
 
 module.exports.authenticated = regd_users;
